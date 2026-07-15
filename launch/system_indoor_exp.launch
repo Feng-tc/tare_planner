@@ -1,0 +1,7 @@
+<launch>
+  <arg name="scenario" default="indoor" />
+  <include file="$(find tare_planner)/launch/tare_planner_indoor.launch">
+    <arg name="scenario" value="$(arg scenario)" />
+    <arg name="rviz" value="false" />
+  </include>
+</launch>

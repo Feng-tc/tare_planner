@@ -1,0 +1,7 @@
+build/
+devel/
+*.o
+*.so
+*.a
+.vscode/
+.idea/

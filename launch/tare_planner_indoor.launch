@@ -1,0 +1,34 @@
+<launch>
+  <arg name="scenario" default="indoor" />
+  <arg name="rviz" default="true" />
+  <arg name="registered_scan_topic" default="/livox/Pointcloud2" />
+  <arg name="state_estimation_topic" default="/Odometry_gazebo" />
+
+  <!-- Room segmentation -->
+  <node pkg="tare_planner" type="room_segmentation" name="room_segmentation" output="screen">
+    <rosparam file="$(find tare_planner)/config/$(arg scenario).yaml" command="load" />
+    <remap from="/livox/Pointcloud2" to="$(arg registered_scan_topic)" />
+    <remap from="/Odometry_gazebo" to="$(arg state_estimation_topic)" />
+    <remap from="/occupied_cloud" to="/occupied_cloud" />
+    <remap from="/freespace_cloud" to="/freespace_cloud" />
+  </node>
+
+  <!-- TARE exploration planner -->
+  <node pkg="tare_planner" type="tare_planner_node" name="tare_planner_node" output="screen">
+    <rosparam file="$(find tare_planner)/config/$(arg scenario).yaml" command="load" />
+    <!-- Expose private planning_env / visualizer topics on global namespace for RViz & room_segmentation -->
+    <remap from="occupied_cloud" to="/occupied_cloud" />
+    <remap from="planner_cloud" to="/planner_cloud" />
+    <remap from="uncovered_cloud" to="/uncovered_cloud" />
+    <remap from="uncovered_frontier_cloud" to="/uncovered_frontier_cloud" />
+    <remap from="rolling_occupancy_grid_cloud" to="/rolling_occupancy_grid_cloud" />
+    <remap from="tare_visualizer/exploring_subspaces" to="/tare_visualizer/exploring_subspaces" />
+    <remap from="tare_visualizer/local_planning_horizon" to="/tare_visualizer/local_planning_horizon" />
+    <remap from="tare_visualizer/local_path" to="/tare_visualizer/local_path" />
+    <remap from="tare_visualizer/viewpoints" to="/tare_visualizer/viewpoints" />
+    <remap from="tare_visualizer/uncovered_surface_points" to="/tare_visualizer/uncovered_surface_points" />
+  </node>
+
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="tare_planner_rviz"
+        args="-d $(find tare_planner)/rviz/tare_planner_indoor.rviz" output="screen" />
+</launch>
