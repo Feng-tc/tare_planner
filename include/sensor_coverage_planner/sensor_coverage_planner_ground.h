@@ -33,6 +33,7 @@
 #include <std_msgs/String.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <tf2/transform_datatypes.h>
+#include <building_generator_interfaces/SetDoorState.h>
 // PCL
 #include <pcl/PointIndices.h>
 #include <pcl/filters/extract_indices.h>
@@ -120,6 +121,7 @@ private:
   std::string pub_runtime_topic_;
   std::string pub_waypoint_topic_;
   std::string pub_momentum_activation_count_topic_;
+  std::string pub_exploring_phase_topic_;
 
   // Bool
   bool kAutoStart;
@@ -131,9 +133,12 @@ private:
   bool kNoExplorationReturnHome;
   bool kUseMomentum;
   bool kUseVlm;
+  bool kUsePhase2Waypoint;
+  bool kUsePhase1Door;
 
   // String
   std::string kTargetObject;
+  std::string kMainEntranceDoorId;
   double kKeyposeCloudDwzFilterLeafSize;
   double kRushHomeDist;
   double kAtHomeDistThreshold;
@@ -141,6 +146,15 @@ private:
   double kLookAheadDistance;
   double kExtendWayPointDistanceBig;
   double kExtendWayPointDistanceSmall;
+  double kPhase2WaypointX;
+  double kPhase2WaypointY;
+  double kPhase2WaypointZ;
+  double kPhase2ArrivalDist;
+  double kPhase1WaypointX;
+  double kPhase1WaypointY;
+  double kPhase1WaypointZ;
+  double kPhase1ArrivalDist;
+  double kPhase1LookaheadDist;
 
   // Int
   int kWaypointPlanningScanInterval;
@@ -213,6 +227,11 @@ private:
 
   bool keypose_cloud_update_;
   bool initialized_;
+  int exploringPhase_;
+  geometry_msgs::Point phase2_waypoint_;
+  geometry_msgs::Point phase1_waypoint_;
+  bool phase1_door_opened_;
+  ros::ServiceClient set_door_state_client_;
   bool lookahead_point_update_;
   bool relocation_;
   bool start_exploration_;
@@ -282,6 +301,7 @@ private:
   ros::Publisher runtime_pub_;
   ros::Publisher
       momentum_activation_count_pub_;
+  ros::Publisher exploring_phase_pub_;
   // Debug
   ros::Publisher
       pointcloud_manager_neighbor_cells_origin_pub_;
@@ -309,6 +329,12 @@ private:
   void ResetWaypointCallback(const std_msgs::Empty::ConstPtr& empty_msg);
 
   void SendInitialWaypoint();
+  void PublishPhase2Waypoint();
+  void PublishPhase1Waypoint();
+  bool SetMainEntranceDoor(bool open, double service_wait_timeout = 1.0);
+  void PublishExploringPhase();
+  void InitPhase2();
+  void AdvanceFromPhase1();
   void UpdateKeyposeGraph();
   int UpdateViewPoints();
   void UpdateViewPointCoverage();

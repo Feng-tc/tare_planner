@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_filters
   cv_bridge
   message_generation
+  building_generator_interfaces
 )
 
 find_package(PCL REQUIRED)
@@ -62,6 +63,7 @@ catkin_package(
   CATKIN_DEPENDS
     roscpp std_msgs nav_msgs geometry_msgs sensor_msgs visualization_msgs
     tf2 tf2_ros pcl_ros pcl_conversions message_filters cv_bridge message_runtime
+    building_generator_interfaces
   DEPENDS PCL OpenCV
 )
 

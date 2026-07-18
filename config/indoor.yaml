@@ -17,9 +17,18 @@ pub_runtime_breakdown_topic_: runtime_breakdown
 pub_runtime_topic_: /runtime
 pub_waypoint_topic_: /way_point
 pub_momentum_activation_count_topic_: momentum_activation_count
+pub_exploring_phase_topic_: /exploring_phase
 
 # Planner behavior
 kAutoStart: true
+kUsePhase1Door: true
+kMainEntranceDoorId: "main_entrance"
+kPhase1Waypoint: [0.0, 4.0, 0.6]
+kPhase1ArrivalDist: 1.0
+kPhase1LookaheadDist: 2.5
+kUsePhase2Waypoint: true
+kPhase2Waypoint: [0.0, 30.0, 0.6]
+kPhase2ArrivalDist: 1.0
 kRushHome: true
 kUseTerrainHeight: false
 kCheckTerrainCollision: true

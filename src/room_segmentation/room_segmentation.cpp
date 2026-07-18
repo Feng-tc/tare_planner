@@ -37,6 +37,7 @@ RoomSegmentationNode::RoomSegmentationNode(ros::NodeHandle& nh, ros::NodeHandle&
       explored_area_display_count_(0),
       room_node_counter_(0),
       segment_flag_(false),
+      exploring_phase_(1),
       demo_frozen_(false),
       demo_publish_count_(0)
 {
@@ -155,6 +156,8 @@ RoomSegmentationNode::RoomSegmentationNode(ros::NodeHandle& nh, ros::NodeHandle&
 
     sub_keyboard_input_ = nh_.subscribe<std_msgs::String>("/keyboard_input", 5, &RoomSegmentationNode::keyboardInputCallback, this);
 
+    sub_exploring_phase_ = nh_.subscribe<std_msgs::Int32>("/exploring_phase", 1, &RoomSegmentationNode::exploringPhaseCallback, this);
+
     // ==================== Create Publishers ====================
     pub_explored_area_ = nh_.advertise<sensor_msgs::PointCloud2>("/explore_areas_new", 5);
     pub_room_mask_vis_ = nh_.advertise<sensor_msgs::Image>("/room_mask_vis", 5);
@@ -176,8 +179,15 @@ RoomSegmentationNode::RoomSegmentationNode(ros::NodeHandle& nh, ros::NodeHandle&
     ROS_INFO("Room Segmentation Node initialized successfully!");
 }
 
+void RoomSegmentationNode::exploringPhaseCallback(const std_msgs::Int32::ConstPtr& msg) {
+    exploring_phase_ = msg->data;
+}
+
 // ==================== Timer Callback ====================
 void RoomSegmentationNode::timerCallback(const ros::TimerEvent& /*event*/) {
+    if (exploring_phase_ == 1) {
+        return;
+    }
     if (demo_frozen_) {
         // Demo mode: skip segmentation and republish the cached results at a
         // throttled rate (~2 Hz given a 100 ms timer period), matching the
@@ -326,6 +336,9 @@ void RoomSegmentationNode::keyboardInputCallback(const std_msgs::String::ConstPt
 
 // ==================== Callback Functions ====================
 void RoomSegmentationNode::laserCloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg) {
+    if (exploring_phase_ == 1) {
+        return;
+    }
     if (demo_frozen_) {
         return;
     }
@@ -466,6 +479,9 @@ void RoomSegmentationNode::laserCloudCallback(const sensor_msgs::PointCloud2::Co
 }
 
 void RoomSegmentationNode::occupiedCloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg) {
+    if (exploring_phase_ == 1) {
+        return;
+    }
     if (demo_frozen_) {
         return;
     }

@@ -27,6 +27,7 @@
 #include <geometry_msgs/Point.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Int32.h>
 
 // PCL
 #include <pcl/point_cloud.h>
@@ -93,6 +94,7 @@ private:
     void freespaceCloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg);
     void stateEstimationCallback(const nav_msgs::Odometry::ConstPtr& msg);
     void keyboardInputCallback(const std_msgs::String::ConstPtr& msg);
+    void exploringPhaseCallback(const std_msgs::Int32::ConstPtr& msg);
     void timerCallback(const ros::TimerEvent& event);
 
     // ==================== Core Processing Functions ====================
@@ -126,6 +128,7 @@ private:
     ros::Subscriber sub_freespace_cloud_;
     ros::Subscriber sub_state_estimation_;
     ros::Subscriber sub_keyboard_input_;
+    ros::Subscriber sub_exploring_phase_;
 
     // Publishers
     ros::Publisher pub_explored_area_;
@@ -214,6 +217,7 @@ private:
     geometry_msgs::Point robot_position_; // robot position in world frame
     int explored_area_display_count_; // counter for publishing explored area
     bool segment_flag_; // flag to trigger room segmentation
+    int exploring_phase_; // 1=Phase1 door entry, skip room segmentation
     bool demo_frozen_; // when true, stop updating and keep republishing cached results
     int demo_publish_count_; // counter for throttling publish rate while frozen
 };
